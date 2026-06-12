@@ -169,7 +169,7 @@
 
   <script>
     // Konfigurasi Google Script URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkI-7fNcnf-LfXzSdBIO47ovH5HuRyyfSOprCgHRXM1gOe6t-j2SzIZUbhfR5slimyXg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjRdskdNuQRZ4DRvAxeSOqVA_pJtKT02Mz_xxm8zjowBifp77xC9bMd2wv9C4aTU2gog/exec;
 
     let itemCount = 0;
     const floorOptions = `<option value="">Lantai...</option><option>Basement</option><option>Lantai 1</option><option>Lantai 2</option><option>Lantai 3</option><option>Lantai 4</option><option>Atap</option><option>Luar</option>`;
@@ -291,21 +291,21 @@
         specificHTML = `
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
-              <span class="text-[9px] font-black text-slate-400 uppercase">Item Alarm</span>
+              <span class="text-[9px] font-black text-slate-400 uppercase">Jenis Alarm</span>
               <select name="media" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+                <option>Konvesional</option>
+                <option>Addresseable</option>
+                <option>Semi Addresseable</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[9px] font-black text-slate-400 uppercase">Item Alarm</span>
+              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Master Control (MCFA)</option>
                 <option>Manual Call Point</option>
                 <option>Heat Detector</option>
                 <option>Smoke Detector</option>
                 <option>Alarm Bell / Strobe</option>
-              </select>
-            </div>
-            <div class="space-y-1">
-              <span class="text-[9px] font-black text-slate-400 uppercase">Status Sistem</span>
-              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
-                <option>Normal (Siaga)</option>
-                <option>Trouble / Fault</option>
-                <option>Disable Zone</option>
               </select>
             </div>
           </div>
@@ -341,9 +341,9 @@
           specificHTML = `
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
-              <span class="text-[9px] font-black text-slate-400 uppercase">Item Pasif</span>
+              <span class="text-[9px] font-black text-slate-400 uppercase">Jalur Evakuasi</span>
               <select name="media" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
-                <option>Emergency Light</option><option>Exit Sign</option><option>Tangga Darurat</option><option>Akses Pemadam</option>
+                <option>Lampu Darurat</option><option>Tangga Darurat</option><option>Pintu Darurat</option>
               </select>
             </div>
             <div class="space-y-1">
@@ -431,13 +431,13 @@
           item_id: card.querySelector('[name="item_id"]').value,
           floor: card.querySelector('[name="floor"]').value,
           location: card.querySelector('[name="location"]').value,
-          media: card.querySelector('[name="media"]')?.value || '',
-          weight: card.querySelector('[name="weight"]')?.value || '',
           cond1: card.querySelector('[name="cond1"]')?.value || '',
           cond2: card.querySelector('[name="cond2"]')?.value || '',
           cond3: card.querySelector('[name="cond3"]')?.value || '',
           cond4: card.querySelector('[name="cond4"]')?.value || '',
           cond5: card.querySelector('[name="cond5"]')?.value || '',
+          cond6: card.querySelector('[name="cond6"]')?.value || '',
+          cond7: card.querySelector('[name="cond7"]')?.value || '',
           note: card.querySelector('[name="note"]').value
         };
         data.items.push(item);
