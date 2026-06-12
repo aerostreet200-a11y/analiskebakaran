@@ -83,6 +83,10 @@
         <nav class="flex gap-6 overflow-x-auto no-scrollbar">
           <button type="button" onclick="switchTab('general')" id="tab-general" class="tab-active pb-2 text-[10px] uppercase whitespace-nowrap">Umum</button>
           <button type="button" onclick="switchTab('items')" id="tab-items" class="pb-2 text-[10px] uppercase whitespace-nowrap opacity-50">Daftar Temuan</button>
+          <button type="button" onclick="switchTab('history')" id="tab-history" class="pb-2 text-[10px] uppercase whitespace-nowrap opacity-50 flex items-center gap-1.5">
+            Riwayat 
+            <span id="history-badge" class="hidden bg-red-600 text-[8px] text-white px-1.5 py-0.5 rounded-full font-black">0</span>
+          </button>
         </nav>
       </header>
 
@@ -164,6 +168,27 @@
       </div>
     </form>
 
+    <!-- SECTION: INPUT HISTORY -->
+    <div id="sec-history" class="hidden p-6 space-y-6">
+      <div class="space-y-4">
+        <h2 class="text-xs font-black text-slate-800 uppercase flex items-center gap-2">
+          <span class="w-1.5 h-4 bg-slate-900 rounded-full"></span>
+          Riwayat Laporan Sesi Ini
+        </h2>
+        
+        <div id="history-list" class="space-y-4 min-h-[400px]">
+          <div id="history-empty-state" class="py-20 text-center space-y-4">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Belum ada riwayat input terkirim</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="toast" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest shadow-2xl text-center min-w-[250px]"></div>
   </div>
 
@@ -172,15 +197,31 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3aW0n9QbcZBu_9LNO5O1HM0G7b79SYMG5sTFNy3k2JYqDWvy6jfdXn0K_DUk2WRf2Cw/exec';
 
     let itemCount = 0;
+    const localHistory = []; // Array untuk menyimpan riwayat input sesi ini
     const floorOptions = `<option value="">Lantai...</option><option>Basement</option><option>Lantai 1</option><option>Lantai 2</option><option>Lantai 3</option><option>Lantai 4</option><option>Lantai 5</option><option>Lantai 6</option><option>Atap</option><option>Luar</option>`;
+
+    // Mapping label kondisi agar representatif di bagian riwayat detail
+    const condLabels = {
+      apar: ["Jenis Media", "Berat", "Tekanan", "Segel", "Selang"],
+      hydrant: ["Jenis Unit", "Status Tekanan", "Box/Pilar", "Nozzle", "Hose", "Valve"],
+      alarm: ["Item Alarm", "Jenis Alarm", "Status Sistem", "Indikator", "Suara"],
+      sprinkler: ["Jenis Head", "Suhu", "Head", "Pipa"],
+      pasif: ["Jalur Evakuasi", "Kelancaran", "Kondisi Lampu", "Visibilitas"]
+    };
 
     function switchTab(target) {
       document.getElementById('sec-general').classList.toggle('hidden', target !== 'general');
       document.getElementById('sec-items').classList.toggle('hidden', target !== 'items');
+      document.getElementById('sec-history').classList.toggle('hidden', target !== 'history');
+
       document.getElementById('tab-general').classList.toggle('tab-active', target === 'general');
       document.getElementById('tab-items').classList.toggle('tab-active', target === 'items');
+      document.getElementById('tab-history').classList.toggle('tab-active', target === 'history');
+
       document.getElementById('tab-general').classList.toggle('opacity-50', target !== 'general');
       document.getElementById('tab-items').classList.toggle('opacity-50', target !== 'items');
+      document.getElementById('tab-history').classList.toggle('opacity-50', target !== 'history');
+
       document.getElementById('sticky-buttons').classList.toggle('hidden', target !== 'items');
       window.scrollTo(0, 0);
     }
@@ -416,6 +457,135 @@
       setTimeout(() => toast.classList.add('hidden'), 5000);
     }
 
+    function saveToHistory(reportData) {
+      // Masukkan salinan data ke bagian teratas riwayat lokal
+      localHistory.unshift(JSON.parse(JSON.stringify(reportData)));
+      
+      // Update badge riwayat di tab header
+      const badge = document.getElementById('history-badge');
+      badge.innerText = localHistory.length;
+      badge.classList.remove('hidden');
+
+      renderHistory();
+    }
+
+    // Render data riwayat ke dalam tab Riwayat secara visual
+    function renderHistory() {
+      const historyList = document.getElementById('history-list');
+      
+      if (localHistory.length === 0) {
+        historyList.innerHTML = `
+          <div id="history-empty-state" class="py-20 text-center space-y-4">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Belum ada riwayat input terkirim</p>
+          </div>`;
+        return;
+      }
+
+      historyList.innerHTML = '';
+
+      localHistory.forEach((report, index) => {
+        // Hitung pengelompokan kategori item dalam laporan ini
+        const counts = {};
+        report.items.forEach(item => {
+          counts[item.category] = (counts[item.category] || 0) + 1;
+        });
+
+        // Buat badge kategori visual
+        let badgesHTML = '';
+        const badgeColors = {
+          apar: 'bg-red-100 text-red-700',
+          hydrant: 'bg-blue-100 text-blue-700',
+          alarm: 'bg-yellow-100 text-yellow-700',
+          sprinkler: 'bg-green-100 text-green-700',
+          pasif: 'bg-purple-100 text-purple-700'
+        };
+
+        for (const [category, count] of Object.entries(counts)) {
+          const colorClass = badgeColors[category] || 'bg-slate-100 text-slate-700';
+          badgesHTML += `<span class="category-badge ${colorClass} mr-1 mb-1 inline-block">${category.toUpperCase()} (${count})</span>`;
+        }
+
+        // Format tanggal agar ramah dibaca
+        const formattedDate = new Date(report.inspect_date).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4 relative overflow-hidden animate-in fade-in duration-300";
+        card.innerHTML = `
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-slate-900"></div>
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="text-sm font-black text-slate-800 uppercase tracking-tight">${report.building_name}</h4>
+              <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">${formattedDate} &bull; Oleh: ${report.inspector_name}</p>
+            </div>
+            <span class="text-[9px] font-black text-slate-900 bg-slate-100 px-3 py-1.5 rounded-full uppercase tracking-tighter">${report.items.length} Item</span>
+          </div>
+          
+          <div class="flex flex-wrap pt-1 border-t border-slate-100">
+            ${badgesHTML}
+          </div>
+
+          <button type="button" onclick="toggleHistoryDetails(${index})" class="text-[9px] font-black text-slate-900 uppercase tracking-widest pt-2 w-full text-left flex justify-between items-center border-t border-slate-100">
+            <span>Lihat rincian temuan</span>
+            <span id="arrow-hist-${index}" class="text-xs transition-transform duration-200">&darr;</span>
+          </button>
+
+          <div id="details-hist-${index}" class="hidden space-y-3 pt-3 border-t border-dashed border-slate-100">
+            ${report.items.map((item, idx) => {
+              const labels = condLabels[item.category] || [];
+              const condDetailsHTML = labels.map((lbl, lIdx) => {
+                const val = item[`cond${lIdx + 1}`];
+                return val ? `<div class="flex justify-between py-1 border-b border-slate-100"><span class="text-slate-400 font-semibold">${lbl}</span><span class="text-slate-700 font-bold">${val}</span></div>` : '';
+              }).filter(Boolean).join('');
+
+              const borderColors = {
+                apar: 'border-red-600',
+                hydrant: 'border-blue-600',
+                alarm: 'border-yellow-500',
+                sprinkler: 'border-green-600',
+                pasif: 'border-purple-600'
+              };
+              const sideColor = borderColors[item.category] || 'border-slate-400';
+
+              return `
+                <div class="bg-slate-50 p-3.5 rounded-2xl relative border-l-4 ${sideColor} space-y-2">
+                  <div class="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+                    <span class="text-slate-800 font-extrabold">${item.category.toUpperCase()} - ${item.item_id || 'TANPA ID'}</span>
+                    <span class="text-slate-400 bg-white border px-2 py-0.5 rounded-lg">${item.floor || 'No Floor'} &bull; ${item.location || 'No Loc'}</span>
+                  </div>
+                  <div class="text-[9px] space-y-0.5">
+                    ${condDetailsHTML}
+                  </div>
+                  ${item.note ? `
+                    <div class="p-2 bg-white rounded-lg border border-slate-100 text-[9px] text-slate-500 italic mt-1 leading-relaxed">
+                      Catatan: ${item.note}
+                    </div>` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+        historyList.appendChild(card);
+      });
+    }
+
+    function toggleHistoryDetails(index) {
+      const details = document.getElementById(`details-hist-${index}`);
+      const arrow = document.getElementById(`arrow-hist-${index}`);
+      const isHidden = details.classList.contains('hidden');
+      
+      details.classList.toggle('hidden', !isHidden);
+      arrow.innerHTML = isHidden ? '&uarr;' : '&darr;';
+    }
+
     window.onload = () => {
       document.getElementById('inspect_date').value = new Date().toISOString().split('T')[0];
     };
@@ -471,13 +641,30 @@
           body: JSON.stringify(data)
         });
 
+        // Simpan ke riwayat input lokal (sesi aktif) sebelum reset form
+        saveToHistory(data);
+
         // Karena mode no-cors tidak bisa baca response body, kita asumsikan sukses jika tidak throw error
         showToast("LAPORAN BERHASIL TERKIRIM KE SHEET! ✅");
         form.reset();
-        document.getElementById('items-list').innerHTML = `<div id="empty-state" class="py-20 text-center space-y-4">...</div>`;
+        
+        // Atur ulang tanggal hari ini
+        document.getElementById('inspect_date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('items-list').innerHTML = `
+          <div id="empty-state" class="py-20 text-center space-y-4">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tambah temuan untuk memulai</p>
+          </div>`;
+        
         updateStats();
         window.scrollTo(0, 0);
-        switchTab('general');
+        
+        // Pindah otomatis ke tab riwayat untuk melihat hasil yang baru dikirim
+        switchTab('history');
 
       } catch (err) {
         console.error(err);
