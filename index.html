@@ -169,10 +169,10 @@
 
   <script>
     // Konfigurasi Google Script URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-SmRy33YTmWr_hg5g00ioIE_3uXbMfsd5zMY7oIQ-8IagqPBimkLILzfngOoe9aO7Qg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQuWCHEnHjd22RZTkHcpcZIRzDjpS41re6G0xN8SuUOOU25FvCFPGzYCkRMDNYPBDDuA/exec';
 
     let itemCount = 0;
-    const floorOptions = `<option value="">Lantai...</option><option>Basement</option><option>Lantai 1</option><option>Lantai 2</option><option>Lantai 3</option><option>Lantai 4</option><option>Atap</option><option>Luar</option>`;
+    const floorOptions = `<option value="">Lantai...</option><option>Basement</option><option>Lantai 1</option><option>Lantai 2</option><option>Lantai 3</option><option>Lantai 4</option><option>Lantai 5</option><option>Lantai 6< option><option>Lantai 7</option><option>Lantai 8</option><option>Lantai 9</option><option>Atap</option><option>Luar</option>`;
 
     function switchTab(target) {
       document.getElementById('sec-general').classList.toggle('hidden', target !== 'general');
@@ -224,21 +224,21 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Jenis Media</span>
-              <select name="media" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Dry Chemical Powder</option><option>CO2</option><option>Foam</option><option>Liquid Gas</option>
               </select>
             </div>
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Berat (kg)</span>
-              <select name="weight" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond2" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>1 kg</option><option>3 kg</option><option>6 kg</option><option>9 kg</option><option>25 kg</option>
               </select>
             </div>
           </div>
           <div class="grid grid-cols-3 gap-2">
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Tekanan</span><select name="cond1" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Normal</option><option>Low</option></select></div>
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Segel</span><select name="cond2" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Utuh</option><option>Putus</option></select></div>
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Selang</span><select name="cond3" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Baik</option><option>Rusak</option></select></div>
+            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Tekanan</span><select name="cond3" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Normal</option><option>Low</option></select></div>
+            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Segel</span><select name="cond4" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Utuh</option><option>Putus</option></select></div>
+            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Selang</span><select name="cond5" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Baik</option><option>Rusak</option></select></div>
           </div>`;
       } 
       else if (type === 'hydrant') {
@@ -246,14 +246,14 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Jenis Unit</span>
-              <select name="media" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Indoor (Gedung)</option>
                 <option>Outdoor (Pilar)</option>
               </select>
             </div>
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Status Tekanan</span>
-              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond2" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Siaga (Standby)</option>
                 <option>Tidak Bertekanan</option>
                 <option>Bocor</option>
@@ -263,25 +263,25 @@
           <div class="grid grid-cols-4 gap-1.5">
             <div class="space-y-1">
               <span class="text-[8px] font-black text-slate-400 uppercase">Box/Pilar</span>
-              <select name="cond2" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
+              <select name="cond3" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
                 <option>Baik</option><option>Rusak</option><option>Hilang</option>
               </select>
             </div>
             <div class="space-y-1">
               <span class="text-[8px] font-black text-slate-400 uppercase">Nozzle</span>
-              <select name="cond3" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
+              <select name="cond4" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
                 <option>Ada</option><option>Hilang</option>
               </select>
             </div>
             <div class="space-y-1">
               <span class="text-[8px] font-black text-slate-400 uppercase">Hose</span>
-              <select name="cond4" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
+              <select name="cond5" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
                 <option>Baik</option><option>Bocor</option><option>Hilang</option>
               </select>
             </div>
             <div class="space-y-1">
               <span class="text-[8px] font-black text-slate-400 uppercase">Valve</span>
-              <select name="cond5" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
+              <select name="cond6" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
                 <option>Normal</option><option>Macet</option>
               </select>
             </div>
@@ -292,7 +292,7 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Item Alarm</span>
-              <select name="media" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Konvensional</option>
                 <option>Addressable</option>
                 <option>Semi-Addressable</option>
@@ -300,7 +300,7 @@
             </div>
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Jenis Alarm</span>
-              <select name="weight" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond2" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Master Control (MCFA)</option>
                 <option>Manual Call Point</option>
                 <option>Heat Detector</option>
@@ -312,7 +312,7 @@
           <div class="grid grid-cols-3 gap-2">
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Status Sistem</span>
-              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
+              <select name="cond3" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
                 <option>Normal (Siaga)</option>
                 <option>Trouble / Fault</option>
                 <option>Disable Zone</option>
@@ -320,7 +320,7 @@
             </div>
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Indikator</span>
-              <select name="cond2" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
+              <select name="cond4" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
                 <option>Normal</option>
                 <option>Mati</option>
                 <option>Error</option>
@@ -328,7 +328,7 @@
             </div>
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Suara</span>
-              <select name="cond4" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
+              <select name="cond5" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none">
                 <option>Berbunyi</option>
                 <option>Mati</option>
               </select>
@@ -340,21 +340,21 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Jenis Head</span>
-              <select name="media" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Pendent</option><option>Upright</option><option>Sidewall</option>
               </select>
             </div>
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Suhu</span>
-              <select name="weight" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond2" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>68°C (Merah)</option><option>79°C (Kuning)</option><option>93°C (Hijau)</option>
               </select>
             </div>
           </div>
           <div class="grid grid-cols-3 gap-2">
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Head</span><select name="cond1" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Bersih</option><option>Rusak</option></select></div>
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Pipa</span><select name="cond2" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Baik</option><option>Bocor</option></select></div>
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Pressure</span><select name="cond3" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Sesuai</option><option>Rendah</option></select></div>
+            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Head</span><select name="cond3" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Bersih</option><option>Rusak</option></select></div>
+            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Pipa</span><select name="cond4" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Baik</option><option>Bocor</option></select></div>
+            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Pressure</span><select name="cond5" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Sesuai</option><option>Rendah</option></select></div>
           </div>`;
       }
       else if (type === 'pasif') {
@@ -362,20 +362,20 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Jalur Evakuasi</span>
-              <select name="media" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Pintu Darurat</option><option>Tangga Darurat</option><option>Lampu Darurat</option>
               </select>
             </div>
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase">Kelancaran</span>
-              <select name="cond1" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
+              <select name="cond2" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none">
                 <option>Lancar</option><option>Terhalang</option>
               </select>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Kondisi Lampu</span><select name="cond2" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Menyala</option><option>Mati</option></select></div>
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Visibilitas</span><select name="cond3" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Jelas</option><option>Buram</option></select></div>
+            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Kondisi Lampu</span><select name="cond3" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Menyala</option><option>Mati</option></select></div>
+            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Visibilitas</span><select name="cond4" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Jelas</option><option>Buram</option></select></div>
           </div>`;
       }
 
