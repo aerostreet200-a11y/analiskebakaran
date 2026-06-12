@@ -171,10 +171,18 @@
     <!-- SECTION: INPUT HISTORY -->
     <div id="sec-history" class="hidden p-6 space-y-6">
       <div class="space-y-4">
-        <h2 class="text-xs font-black text-slate-800 uppercase flex items-center gap-2">
-          <span class="w-1.5 h-4 bg-slate-900 rounded-full"></span>
-          Riwayat Laporan Sesi Ini
-        </h2>
+        <div class="flex justify-between items-center">
+          <h2 class="text-xs font-black text-slate-800 uppercase flex items-center gap-2">
+            <span class="w-1.5 h-4 bg-slate-900 rounded-full"></span>
+            Riwayat Laporan Sesi Ini
+          </h2>
+          <button type="button" id="btn-clear-history" onclick="clearAllHistory()" class="hidden text-[10px] font-black text-red-600 hover:text-red-700 uppercase tracking-wider flex items-center gap-1 transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Hapus Riwayat</span>
+          </button>
+        </div>
         
         <div id="history-list" class="space-y-4 min-h-[400px]">
           <div id="history-empty-state" class="py-20 text-center space-y-4">
@@ -472,8 +480,10 @@
     // Render data riwayat ke dalam tab Riwayat secara visual
     function renderHistory() {
       const historyList = document.getElementById('history-list');
+      const clearBtn = document.getElementById('btn-clear-history');
       
       if (localHistory.length === 0) {
+        if (clearBtn) clearBtn.classList.add('hidden');
         historyList.innerHTML = `
           <div id="history-empty-state" class="py-20 text-center space-y-4">
             <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
@@ -486,6 +496,7 @@
         return;
       }
 
+      if (clearBtn) clearBtn.classList.remove('hidden');
       historyList.innerHTML = '';
 
       localHistory.forEach((report, index) => {
@@ -584,6 +595,51 @@
       
       details.classList.toggle('hidden', !isHidden);
       arrow.innerHTML = isHidden ? '&uarr;' : '&darr;';
+    }
+
+    let clearHistoryConfirm = false;
+    function clearAllHistory() {
+      const clearBtn = document.getElementById('btn-clear-history');
+      if (!clearHistoryConfirm) {
+        clearHistoryConfirm = true;
+        clearBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>Yakin Hapus?</span>`;
+        clearBtn.classList.remove('text-red-600');
+        clearBtn.classList.add('text-amber-600');
+        
+        // Atur ulang tombol jika tidak ada konfirmasi kedua setelah 3 detik
+        setTimeout(() => {
+          resetClearBtn();
+        }, 3000);
+      } else {
+        // Melakukan penghapusan total riwayat sesi ini
+        localHistory.length = 0;
+        
+        const badge = document.getElementById('history-badge');
+        badge.innerText = 0;
+        badge.classList.add('hidden');
+        
+        resetClearBtn();
+        renderHistory();
+        showToast("RIWAYAT SESI INI BERHASIL DIHAPUS 🗑️");
+      }
+    }
+
+    function resetClearBtn() {
+      clearHistoryConfirm = false;
+      const clearBtn = document.getElementById('btn-clear-history');
+      if (clearBtn) {
+        clearBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <span>Hapus Riwayat</span>`;
+        clearBtn.classList.remove('text-amber-600');
+        clearBtn.classList.add('text-red-600');
+      }
     }
 
     window.onload = () => {
