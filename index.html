@@ -172,7 +172,7 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3aW0n9QbcZBu_9LNO5O1HM0G7b79SYMG5sTFNy3k2JYqDWvy6jfdXn0K_DUk2WRf2Cw/exec';
 
     let itemCount = 0;
-    const floorOptions = `<option value="">Lantai...</option><option>Basement</option><option>Lantai 1</option><option>Lantai 2</option><option>Lantai 3</option><option>Lantai 4</option><option>Lantai 5</option><option>Lantai 6<option><option>Lantai 7</option><option>Lantai 8</option><option>Lantai 9</option><option>Atap</option><option>Luar</option>`;
+    const floorOptions = `<option value="">Lantai...</option><option>Basement</option><option>Lantai 1</option><option>Lantai 2</option><option>Lantai 3</option><option>Lantai 4</option><option>Lantai 5</option><option>Lantai 6<option><option>Atap</option><option>Luar</option>`;
 
     function switchTab(target) {
       document.getElementById('sec-general').classList.toggle('hidden', target !== 'general');
@@ -451,13 +451,12 @@
           item_id: card.querySelector('[name="item_id"]').value,
           floor: card.querySelector('[name="floor"]').value,
           location: card.querySelector('[name="location"]').value,
-          media: card.querySelector('[name="media"]')?.value || '',
-          weight: card.querySelector('[name="weight"]')?.value || '',
           cond1: card.querySelector('[name="cond1"]')?.value || '',
           cond2: card.querySelector('[name="cond2"]')?.value || '',
           cond3: card.querySelector('[name="cond3"]')?.value || '',
           cond4: card.querySelector('[name="cond4"]')?.value || '',
           cond5: card.querySelector('[name="cond5"]')?.value || '',
+          cond5: card.querySelector('[name="cond6"]')?.value || '',
           note: card.querySelector('[name="note"]').value
         };
         data.items.push(item);
