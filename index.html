@@ -202,7 +202,7 @@
 
   <script>
     // Konfigurasi Google Script URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3aW0n9QbcZBu_9LNO5O1HM0G7b79SYMG5sTFNy3k2JYqDWvy6jfdXn0K_DUk2WRf2Cw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSVlr6n86guhxav2qFJ2UH5fXgy0c38N56A6VhTt1J72RcTAVYBByalkupfOBSoPpqtA/exec';
 
     let itemCount = 0;
     const localHistory = []; // Array untuk menyimpan riwayat input sesi ini
@@ -451,6 +451,13 @@
         </div>
         ${specificHTML}
         <textarea name="note" placeholder="Catatan tambahan..." class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none min-h-[50px]"></textarea>
+        <div class="mt-2">
+           <label class="block text-[9px] font-black text-slate-400 uppercase mb-1 flex items-center gap-1">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+             Foto Temuan (Opsional)
+           </label>
+           <input type="file" name="photo" accept="image/*" capture="environment" class="w-full p-2 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[9px] file:font-bold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
+        </div>
       `;
 
       list.insertBefore(card, list.firstChild);
@@ -579,6 +586,11 @@
                     <div class="p-2 bg-white rounded-lg border border-slate-100 text-[9px] text-slate-500 italic mt-1 leading-relaxed">
                       Catatan: ${item.note}
                     </div>` : ''}
+                  ${item.photo ? `
+                    <div class="p-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-100 text-[9px] font-bold mt-1 flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      File Foto Dilampirkan
+                    </div>` : ''}
                 </div>
               `;
             }).join('')}
@@ -669,25 +681,44 @@
         items: []
       };
 
-      // Kumpulkan data temuan
-      itemCards.forEach(card => {
-        const item = {
-          category: card.dataset.category,
-          item_id: card.querySelector('[name="item_id"]').value,
-          floor: card.querySelector('[name="floor"]').value,
-          location: card.querySelector('[name="location"]').value,
-          cond1: card.querySelector('[name="cond1"]')?.value || '',
-          cond2: card.querySelector('[name="cond2"]')?.value || '',
-          cond3: card.querySelector('[name="cond3"]')?.value || '',
-          cond4: card.querySelector('[name="cond4"]')?.value || '',
-          cond5: card.querySelector('[name="cond5"]')?.value || '',
-          cond6: card.querySelector('[name="cond6"]')?.value || '',
-          note: card.querySelector('[name="note"]').value
-        };
-        data.items.push(item);
-      });
-
       try {
+        // Kumpulkan data temuan beserta file foto (di-convert ke base64)
+        const itemPromises = Array.from(itemCards).map(async card => {
+          const photoInput = card.querySelector('[name="photo"]');
+          let photoData = null;
+          
+          if (photoInput && photoInput.files.length > 0) {
+             const fileData = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(photoInput.files[0]);
+                reader.onload = () => resolve({
+                    mimeType: photoInput.files[0].type,
+                    filename: "Foto_" + Date.now() + "_" + photoInput.files[0].name,
+                    base64: reader.result.split(',')[1]
+                });
+                reader.onerror = error => reject(error);
+             });
+             photoData = fileData;
+          }
+
+          return {
+            category: card.dataset.category,
+            item_id: card.querySelector('[name="item_id"]').value,
+            floor: card.querySelector('[name="floor"]').value,
+            location: card.querySelector('[name="location"]').value,
+            cond1: card.querySelector('[name="cond1"]')?.value || '',
+            cond2: card.querySelector('[name="cond2"]')?.value || '',
+            cond3: card.querySelector('[name="cond3"]')?.value || '',
+            cond4: card.querySelector('[name="cond4"]')?.value || '',
+            cond5: card.querySelector('[name="cond5"]')?.value || '',
+            cond6: card.querySelector('[name="cond6"]')?.value || '',
+            note: card.querySelector('[name="note"]').value,
+            photo: photoData
+          };
+        });
+
+        data.items = await Promise.all(itemPromises);
+
         // Kirim ke Google Apps Script via POST
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
