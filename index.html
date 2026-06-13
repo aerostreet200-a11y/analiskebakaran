@@ -62,7 +62,7 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
+      0 { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
   </style>
@@ -202,7 +202,7 @@
 
   <script>
     // Konfigurasi Google Script URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSUge2OsyLC-RZYKDFT10r5CIaEKKGXyNAn1LpQjOfU10YhWA_6J0taa4Ci3-OW3EV/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwujm4flIONsis6sZ-XK3JsGhK9BmYE0tBD-SLIl_SEpp0LSwzuH3TP0iUKKF7Gg3Dt/exec';
 
     let itemCount = 0;
     const localHistory = []; // Array untuk menyimpan riwayat input sesi ini
@@ -210,7 +210,7 @@
 
     // Mapping label kondisi agar representatif di bagian riwayat detail
     const condLabels = {
-      apar: ["Jenis Media", "Berat", "Tekanan", "Segel", "Selang"],
+      apar: ["Jenis Media", "Berat", "Tekanan", "Segel", "Selang", "Expired"],
       hydrant: ["Jenis Unit", "Status Tekanan", "Box/Pilar", "Nozzle", "Hose", "Valve"],
       alarm: ["Item Alarm", "Jenis Alarm", "Status Sistem", "Indikator", "Suara"],
       sprinkler: ["Jenis Head", "Suhu", "Head", "Pipa"],
@@ -284,10 +284,11 @@
               </select>
             </div>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Tekanan</span><select name="cond3" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Normal</option><option>Low</option></select></div>
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Segel</span><select name="cond4" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Utuh</option><option>Putus</option></select></div>
-            <div class="space-y-1"><span class="text-[9px] font-black text-slate-400 uppercase">Selang</span><select name="cond5" class="w-full p-2 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Baik</option><option>Rusak</option></select></div>
+          <div class="grid grid-cols-4 gap-1.5">
+            <div class="space-y-1"><span class="text-[8px] font-black text-slate-400 uppercase">Tekanan</span><select name="cond3" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Normal</option><option>Low</option></select></div>
+            <div class="space-y-1"><span class="text-[8px] font-black text-slate-400 uppercase">Segel</span><select name="cond4" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Utuh</option><option>Putus</option></select></div>
+            <div class="space-y-1"><span class="text-[8px] font-black text-slate-400 uppercase">Selang</span><select name="cond5" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Baik</option><option>Rusak</option></select></div>
+            <div class="space-y-1"><span class="text-[8px] font-black text-slate-400 uppercase">Expired</span><select name="cond6" class="w-full p-1.5 bg-slate-50 border rounded-lg text-[10px] font-bold outline-none"><option>Tidak</option><option>Iya</option></select></div>
           </div>`;
       } 
       else if (type === 'hydrant') {
@@ -589,7 +590,7 @@
                   ${item.photo ? `
                     <div class="p-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-100 text-[9px] font-bold mt-1 flex items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                      File Foto Dilampirkan
+                      File Foto Dilampirkan (Kompresi Aktif)
                     </div>` : ''}
                 </div>
               `;
@@ -654,6 +655,53 @@
       }
     }
 
+    // Fungsi Pembantu: Kompresi Gambar pada Sisi Klien menggunakan HTML5 Canvas
+    function compressAndGetBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1024;  // Membatasi lebar gambar maks 1024px
+            const MAX_HEIGHT = 1024; // Membatasi tinggi gambar maks 1024px
+            let width = img.width;
+            let height = img.height;
+
+            // Mempertahankan rasio aspek gambar saat pengecilan dimensi
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height = Math.round((height * MAX_WIDTH) / width);
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width = Math.round((width * MAX_HEIGHT) / height);
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Kompresi kualitas gambar JPEG ke 0.7 (70% kualitas terbaik)
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            resolve({
+              mimeType: 'image/jpeg',
+              filename: "Foto_" + Date.now() + ".jpg",
+              base64: dataUrl.split(',')[1]
+            });
+          };
+          img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+      });
+    }
+
     window.onload = () => {
       document.getElementById('inspect_date').value = new Date().toISOString().split('T')[0];
     };
@@ -682,23 +730,30 @@
       };
 
       try {
-        // Kumpulkan data temuan beserta file foto (di-convert ke base64)
+        // Kumpulkan data temuan beserta file foto (yang dikompresi)
         const itemPromises = Array.from(itemCards).map(async card => {
           const photoInput = card.querySelector('[name="photo"]');
           let photoData = null;
           
           if (photoInput && photoInput.files.length > 0) {
-             const fileData = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(photoInput.files[0]);
-                reader.onload = () => resolve({
-                    mimeType: photoInput.files[0].type,
-                    filename: "Foto_" + Date.now() + "_" + photoInput.files[0].name,
-                    base64: reader.result.split(',')[1]
+             try {
+                // Gunakan fungsi kompresor otomatis
+                photoData = await compressAndGetBase64(photoInput.files[0]);
+             } catch (compressErr) {
+                console.warn("Kompresi gagal, mengirim file mentah...", compressErr);
+                // Fallback jika proses kompresi di atas gagal
+                const fileData = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(photoInput.files[0]);
+                    reader.onload = () => resolve({
+                        mimeType: photoInput.files[0].type,
+                        filename: "Foto_" + Date.now() + "_" + photoInput.files[0].name,
+                        base64: reader.result.split(',')[1]
+                    });
+                    reader.onerror = error => reject(error);
                 });
-                reader.onerror = error => reject(error);
-             });
-             photoData = fileData;
+                photoData = fileData;
+             }
           }
 
           return {
