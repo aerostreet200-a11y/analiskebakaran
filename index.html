@@ -202,7 +202,7 @@
 
   <script>
     // Konfigurasi Google Script URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwujm4flIONsis6sZ-XK3JsGhK9BmYE0tBD-SLIl_SEpp0LSwzuH3TP0iUKKF7Gg3Dt/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPzkDcI-2iwbsY1skHBFAMhmI7D_rmAx6H8nAJOLn9Jfx4qL36_Dt4jqq0kM-2gWSx/exec';
 
     let itemCount = 0;
     const localHistory = []; // Array untuk menyimpan riwayat input sesi ini
@@ -759,7 +759,7 @@
           return {
             category: card.dataset.category,
             item_id: card.querySelector('[name="item_id"]').value,
-            location: card.querySelector('[name="floor"]').value,
+            floor: card.querySelector('[name="floor"]').value,
             location: card.querySelector('[name="location"]').value,
             cond1: card.querySelector('[name="cond1"]')?.value || '',
             cond2: card.querySelector('[name="cond2"]')?.value || '',
